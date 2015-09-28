@@ -21,16 +21,18 @@ class Gibbsforgauss(object):
 
     def generate(self):
         '''generate the chain'''
-        s1 = numpy.sqrt(1-self.rho**2)*self.sigma1
-        s2 = numpy.sqrt(1-self.rho**2)*self.sigma2
+        s1 = numpy.sqrt(1 - self.rho**2) * self.sigma1
+        s2 = numpy.sqrt(1 - self.rho**2) * self.sigma2
         self.X[0] = [self.mu1, self.mu2]
-        for i in range(0, self.N-1):
+        for i in range(0, self.N - 1):
             X2 = self.X[i][1]
-            m1 = self.mu1+self.rho*(X2-self.mu2)*self.sigma1/self.sigma2
-            self.X[i+1][0] = random.gauss(m1, s1)
+            m1 = self.mu1 + self.rho * \
+                (X2 - self.mu2) * self.sigma1 / self.sigma2
+            self.X[i + 1][0] = random.gauss(m1, s1)
             X1 = self.X[i][0]
-            m2 = self.mu2+self.rho*(X1-self.mu1)*self.sigma2/self.sigma1
-            self.X[i+1][1] = random.gauss(m2, s2)
+            m2 = self.mu2 + self.rho * \
+                (X1 - self.mu1) * self.sigma2 / self.sigma1
+            self.X[i + 1][1] = random.gauss(m2, s2)
         Y = self.X[self.off:self.N]
         return Y
 
@@ -47,7 +49,7 @@ def main():
     Y = X.generate()
     k = 1
     for ii in Y:
-        print "%3d: (% .10f, % .10f)" % (k, ii[0], ii[1])
+        print("%3d: (%.10f, %.10f)" % (k, ii[0], ii[1]))
         k += 1
 
 
