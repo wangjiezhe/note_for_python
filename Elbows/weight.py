@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import os
 import numpy as np
 from functools import partial
 import pandas as pd
@@ -28,6 +29,8 @@ def elbow_45e_weight(D, S, R, rho=rho_carbon_steel):
 
 
 def main():
+    src_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(src_dir)
     DNtoA = pd.read_csv('DNtoA.csv')
     DNtoOD = pd.read_csv('DNtoOD.csv')
     DNandS = pd.read_csv('DNandS.csv')
