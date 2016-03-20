@@ -35,7 +35,7 @@ def main():
     print(tids)
     if len(tids) == 0:
         print('No specific tid!')
-        return -1
+        sys.exit(1)
     for tid in tids:
         url = BASEURL + tid
         title, text = get(url)

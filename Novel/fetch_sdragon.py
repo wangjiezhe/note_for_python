@@ -5,7 +5,7 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
-BASEURL = 'http://ebook.s-dragon.org/forum/archiver/?tid-'
+BASEURL = 'http://ebook.s-dragon.org/forum/archiver/?tid-%s.html'
 ENCODING = 'Big5'
 GOAGENT = {'http': '127.0.0.1:8087'}
 HEADERS = {
@@ -25,19 +25,23 @@ def get(url):
         return title, content
 
 
+def download(tid):
+    url = BASEURL % tid
+    title, text = get(url)
+    print(title)
+    filename = title + '.txt'
+    with open(filename, 'w') as fp:
+        fp.write(text)
+
+
 def main():
     tids = sys.argv[1:]
     print(tids)
     if len(tids) == 0:
         print('No specific tid!')
-        return -1
+        sys.exit(1)
     for tid in tids:
-        url = BASEURL + tid
-        title, text = get(url)
-        print(title)
-        filename = title + '.txt'
-        with open(filename, 'w') as fp:
-            fp.write(text)
+        download(tid)
 
 
 if __name__ == '__main__':
