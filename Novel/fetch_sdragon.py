@@ -13,6 +13,11 @@ HEADERS = {
 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.101 Safari/537.36'}
 
 
+def refine(text):
+    text = text.replace('\r\n', '\n')
+    return text
+
+
 def get(url):
     req = requests.get(url, headers=HEADERS, proxies=GOAGENT)
     if req.ok:
@@ -22,6 +27,7 @@ def get(url):
         content = '\n'.join(
             [k.text for k in source.find_all(
                 'div', attrs={'class': 'archiver_post'})])
+        content = refine(content)
         return title, content
 
 
