@@ -21,7 +21,7 @@ class Iss(object):
         self.headers = headers or {}
         self.proxies = proxies or {}
         self.doc = pq(url, headers=self.headers, proxies=self.proxies)
-        self.accounts_name = ['us', 'hk', 'ja']
+        self.accounts_name = ['us', 'hk', 'jp']
         self.conf_name = ['server', 'server_port', 'password', 'method']
         self.accounts = self._parse()
 
