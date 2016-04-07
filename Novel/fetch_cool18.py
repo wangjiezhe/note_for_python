@@ -44,8 +44,8 @@ class Tool(object):
 
 class Cool18(object):
 
-    def __init__(self, baseurl, tid, headers=None, proxies=None):
-        self.baseurl = baseurl
+    def __init__(self, tid, headers=None, proxies=None):
+        self.baseurl = BASEURL
         self.tid = tid
         self.url = self.baseurl % tid
         self.headers = headers or {}
@@ -88,7 +88,7 @@ def main():
         print('No specific tid!')
         sys.exit(1)
     for tid in tids:
-        coo = Cool18(BASEURL, tid, HEADERS, GOAGENT)
+        coo = Cool18(tid, HEADERS, GOAGENT)
         coo.dump()
 
 
