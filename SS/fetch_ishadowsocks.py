@@ -28,7 +28,7 @@ class Iss(object):
 
     @staticmethod
     def _value(text):
-        pattern = re.match(r'\S+:\s*(\S+)', text)
+        pattern = re.match(r'\S+:\s*(\S*)', text)
         return pattern.group(1)
 
     def _get_account(self, accounts, ind):
@@ -42,16 +42,17 @@ class Iss(object):
 
     def _parse(self):
         accounts = self.doc('#free')('.col-lg-4')
-        res = [{k: self._get_account(accounts, v)}
-               for v, k in enumerate(self.accounts_name)]
+        res = {k: self._get_account(accounts, v)
+               for v, k in enumerate(self.accounts_name)}
         return res
 
     def dump(self):
-        for ac in self.accounts:
-            for k, v in ac.items():
-                if v is not None:
-                    with open(CONF % k, 'w') as fp:
-                        json.dump(v, fp, indent=2)
+        for k, v in self.accounts.items():
+            if v is not None:
+                if v['password'] == '':
+                    print('Warning: No password for %s!' % k)
+                with open(CONF % k, 'w') as fp:
+                    json.dump(v, fp, indent=2)
 
 
 def main():
