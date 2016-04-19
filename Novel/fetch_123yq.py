@@ -8,6 +8,7 @@ import re
 from time import sleep
 from pyquery import PyQuery as pq
 from urllib.error import HTTPError
+from itertools import zip_longest
 
 BASE_URL = 'http://www.123yq.org/read/%s/%s/'
 INTRO_URL = 'http://www.123yq.org/xiaoshuo_%s.html'
@@ -16,6 +17,13 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) \
 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.101 Safari/537.36'}
 ENCODING = 'GB18030'
+
+
+def grouper(iterable, n, fillvalue=None):
+    "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
 
 
 class Yq123(object):
@@ -44,8 +52,10 @@ class Yq123(object):
         ).filter(
             lambda i, e: e[0] is not None
         )
-        clist.sort(
-            key=lambda s: int(re.match('.*/(\d*)\.shtml', s[0]).group(1)))
+        # clist.sort(
+        #     key=lambda s: int(re.match('.*/(\d*)\.shtml', s[0]).group(1)))
+        clist = (a for tup in (reversed(l) for l in grouper(clist, 3))
+                 for a in tup if a is not None)
         return clist
 
     def get_intro(self):
