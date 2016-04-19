@@ -22,7 +22,8 @@ class Yq123(object):
 
     def __init__(self, tid, headers=None, proxies=None):
         self.tid = str(tid)
-        self.url = BASE_URL % (self.tid[:-3], self.tid)
+        self.url = BASE_URL % (
+            self.tid[:-3] if self.tid[:-3] != '' else '0', self.tid)
         self.encoding = ENCODING
         self.headers = headers or {}
         self.proxies = proxies or {}
@@ -43,7 +44,8 @@ class Yq123(object):
         ).filter(
             lambda i, e: e[0] is not None
         )
-        clist.sort(key=lambda s: int(re.match('.*/(\d*)\.shtml', s[0]).group(1)))
+        clist.sort(
+            key=lambda s: int(re.match('.*/(\d*)\.shtml', s[0]).group(1)))
         return clist
 
     def get_intro(self):
@@ -63,7 +65,7 @@ class Yq123(object):
             os.makedirs(self.download_dir)
         print('《%s》%s' % (self.title, self.author))
         for i, s in enumerate(self.chapter_list):
-            self.dump_chapter(s[0], s[1], i+1)
+            self.dump_chapter(s[0], s[1], i + 1)
 
     def dump_chapter(self, url, title, num):
         try:
