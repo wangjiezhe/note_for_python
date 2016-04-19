@@ -19,11 +19,13 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.101 Safari/537.36'}
 ENCODING = 'GB18030'
 
 
-def grouper(iterable, n, fillvalue=None):
-    "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
-    return zip_longest(*args, fillvalue=fillvalue)
+def fix_order(i):
+    if i % 3 == 0:
+        return i + 2
+    elif i % 3 == 2:
+        return i - 2
+    else:
+        return i
 
 
 class Yq123(object):
@@ -48,14 +50,11 @@ class Yq123(object):
     @property
     def chapter_list(self):
         clist = self.doc('dd').map(
-            lambda i, e: (pq(e)('a').attr['href'], pq(e).text())
+            lambda i, e: (fix_order(i), pq(e)('a').attr['href'], pq(e).text())
         ).filter(
-            lambda i, e: e[0] is not None
+            lambda i, e: e[1] is not None
         )
-        # clist.sort(
-        #     key=lambda s: int(re.match('.*/(\d*)\.shtml', s[0]).group(1)))
-        clist = (a for tup in (reversed(l) for l in grouper(clist, 3))
-                 for a in tup if a is not None)
+        clist.sort(key=lambda s: int(s[0]))
         return clist
 
     def get_intro(self):
@@ -74,8 +73,8 @@ class Yq123(object):
         if not os.path.isdir(self.download_dir):
             os.makedirs(self.download_dir)
         print('《%s》%s' % (self.title, self.author))
-        for i, s in enumerate(self.chapter_list):
-            self.dump_chapter(s[0], s[1], i + 1)
+        for i, url, title in self.chapter_list:
+            self.dump_chapter(url, title, i + 1)
 
     def dump_chapter(self, url, title, num):
         try:
@@ -96,11 +95,11 @@ class Yq123(object):
             fp.write(self.author)
             fp.write('\n\n\n')
             fp.write(self.get_intro())
-            for i, s in enumerate(self.chapter_list):
-                content = self.get_chapter(s[0], s[1])
+            for i, url, title in self.chapter_list:
+                content = self.get_chapter(url, title)
                 fp.write('\n\n\n\n')
-                print(s[1])
-                fp.write(s[1])
+                print(title)
+                fp.write(title)
                 fp.write('\n\n\n')
                 fp.write(content)
 
