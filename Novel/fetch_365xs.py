@@ -8,9 +8,10 @@ import re
 from time import sleep
 from pyquery import PyQuery as pq
 from urllib.error import HTTPError
+from urllib.parse import urljoin
 
-BASE_URL = 'http://www.123yq.org/read/%s/%s/'
-INTRO_URL = 'http://www.123yq.org/xiaoshuo_%s.html'
+BASE_URL = 'http://www.365xs.org/books/%s/%s/'
+INTRO_URL = 'http://www.365xs.org/book/%s/index.html'
 GOAGENT = {'http': '127.0.0.1:8087'}
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) \
@@ -18,16 +19,7 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.101 Safari/537.36'}
 ENCODING = 'GB18030'
 
 
-def fix_order(i):
-    if i % 3 == 0:
-        return i + 2
-    elif i % 3 == 2:
-        return i - 2
-    else:
-        return i
-
-
-class Yq123(object):
+class Xs365(object):
 
     def __init__(self, tid, headers=None, proxies=None):
         self.tid = str(tid)
@@ -43,19 +35,18 @@ class Yq123(object):
 
     def get_title_and_author(self):
         st = self.doc('meta').filter(
-            lambda i, e: pq(e).attr['name'] == 'keywords').attr['content']
-        return re.match(r'(.*?),(.*?),', st).groups()
+            lambda i, e: pq(e).attr['name'] == 'author').attr['content']
+        return re.match(r'(.*)版权属于作者(.*)', st).groups()
 
     @property
     def chapter_list(self):
-        clist = self.doc('dd').map(
-            lambda i, e: (fix_order(i),
-                          pq(e)('a').attr['href'],
+        clist = self.doc('.chapterlist')('li').map(
+            lambda i, e: (i,
+                          urljoin(self.url, pq(e)('a').attr['href']),
                           pq(e).text())
         ).filter(
             lambda i, e: e[1] is not None
         )
-        clist.sort(key=lambda s: int(s[0]))
         return clist
 
     def get_intro(self):
@@ -79,7 +70,7 @@ class Yq123(object):
 
     def dump_chapter(self, url, title, num):
         try:
-            page = Yq123Page(url, title, self.headers, self.proxies)
+            page = Xs365Page(url, title, self.headers, self.proxies)
             page.dump(folder=self.download_dir, num=num)
         except HTTPError:
             print("Wait 5s to retry...")
@@ -107,7 +98,7 @@ class Yq123(object):
 
     def get_chapter(self, url, title):
         try:
-            page = Yq123Page(url, title, self.headers, self.proxies)
+            page = Xs365Page(url, title, self.headers, self.proxies)
             return page.get_content()
         except HTTPError:
             print("Wait 5s to retry...")
@@ -115,7 +106,7 @@ class Yq123(object):
             return self.get_chapter(url, title)
 
 
-class Yq123Page(object):
+class Xs365Page(object):
 
     def __init__(self, url, title, headers=None, proxies=None):
         self.url = url
@@ -129,7 +120,7 @@ class Yq123Page(object):
                       encoding=self.encoding)
 
     def get_content(self):
-        content = self.doc('#TXT').html()
+        content = self.doc('#content').html()
         content = self.tool.replace(content)
         return content
 
@@ -156,7 +147,7 @@ class Tool(object):
     def __init__(self):
         self._remove_addr = re.compile(r'<a.*?>.*?</a>')
         self._remove_div = re.compile(r'<div.*?>.*?</div>')
-        self._replace_br = re.compile(r'<br\s*/\s*>')
+        self._replace_br = re.compile(r'<br\s*/\s*>|</\s*br>')
         self._replace_xa = re.compile(r'\xa0')
         self._remove_r = re.compile(r'&#13;|\r')
         self._remove_ot = re.compile(r'<.*?>')
@@ -178,7 +169,7 @@ def main():
         print('No specific tid!')
         sys.exit(1)
     for tid in tids:
-        yq = Yq123(tid, HEADERS, GOAGENT)
+        yq = Xs365(tid, HEADERS, GOAGENT)
         yq.dump()
 
 
