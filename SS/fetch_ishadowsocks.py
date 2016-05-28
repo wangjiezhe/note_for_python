@@ -3,8 +3,9 @@
 
 import re
 import json
-from pyquery import PyQuery as pq
 from collections import OrderedDict
+
+from pyquery import PyQuery as pq
 
 GOAGENT = {'http': '127.0.0.1:8087'}
 HEADERS = {
@@ -24,7 +25,7 @@ class Iss(object):
         self.doc = pq(url, headers=self.headers, proxies=self.proxies)
         self.accounts_name = ('us', 'hk', 'jp')
         self.conf_name = ('server', 'server_port', 'password', 'method')
-        self.accounts = self._parse()
+        self.accounts = self.parse()
 
     @staticmethod
     def _value(text):
@@ -40,7 +41,7 @@ class Iss(object):
                 for v, k in enumerate(self.conf_name))
             return res
 
-    def _parse(self):
+    def parse(self):
         accounts = self.doc('#free')('.col-lg-4')
         res = {k: self._get_account(accounts, v)
                for v, k in enumerate(self.accounts_name)}
