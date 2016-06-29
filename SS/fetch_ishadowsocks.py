@@ -55,10 +55,19 @@ class Iss(object):
                 with open(CONF % k, 'w') as fp:
                     json.dump(v, fp, indent=2)
 
+    def show(self):
+        accounts = self.accounts
+        for k, v in accounts.copy().items():
+            if v is not None:
+                if v['password'] == '':
+                    del accounts[k]
+        print(json.dumps(accounts, indent=2))
+
 
 def main():
     iss = Iss(URL, HEADERS, GOAGENT)
     iss.dump()
+    iss.show()
 
 
 if __name__ == '__main__':
