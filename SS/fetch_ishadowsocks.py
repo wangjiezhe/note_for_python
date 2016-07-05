@@ -3,6 +3,7 @@
 
 import re
 import json
+import argparse
 from collections import OrderedDict
 
 from pyquery import PyQuery as pq
@@ -65,7 +66,16 @@ class Iss(object):
 
 
 def main():
-    iss = Iss(URL, HEADERS, GOAGENT)
+    parser = argparse.ArgumentParser(
+        description='Get free shadowsocks accounts from http://www.ishadowsocks.net/'
+    )
+    parser.add_argument('-n', '--no-proxy', action='store_true',
+                        help='do not use proxy')
+    args = parser.parse_args()
+    if args.no_proxy:
+        iss = Iss(URL, HEADERS)
+    else:
+        iss = Iss(URL, HEADERS, GOAGENT)
     iss.dump()
     iss.show()
 
