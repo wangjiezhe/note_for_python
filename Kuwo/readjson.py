@@ -73,7 +73,6 @@ def analyse_args(args=sys.argv[1:]):
 
     return jsonfile, outdir, playlist
 
-
 # def generate_lrc_name(artist, song):
 #     return artist + "-" + song + ".lrc"
 
@@ -135,8 +134,8 @@ def copyfiles(file_and_dst_list, srcdir, outdir):
         # dstfile = os.path.join(outdir, generate_dst_song_name(filename))
         dstfile = filename[1]
         if (not os.path.exists(dstfile) or
-           (os.path.exists(dstfile) and
-           os.path.getsize(dstfile) != os.path.getsize(srcfile))):
+            (os.path.exists(dstfile) and
+             os.path.getsize(dstfile) != os.path.getsize(srcfile))):
             shutil.copy(srcfile, dstfile)
 
 
@@ -152,8 +151,6 @@ def cdec(name):
 
 class MyMTP(pymtp.MTP):
     '''定制 MTP 类'''
-#    def __init__(self):
-#        super().__init__()
 
     def sendfiles(self, file_and_dst_list, srcdir, parent=0):
         for name in file_and_dst_list:
@@ -162,7 +159,8 @@ class MyMTP(pymtp.MTP):
             # target = generate_dst_song_name(name)
             target = name[1]
             item_id = self.send_file_from_file(source, target, parent=parent)
-            print(dedent("Create new file with\
+            print(
+                dedent("Create new file with\
                     ID: %s for File: %s" % (item_id, target)))
 
     def sendtrack(self, source, target, parent=0):
@@ -179,10 +177,11 @@ class MyMTP(pymtp.MTP):
         if 'track' in easydata:
             metadata.tracknumber = easydata['track']
 
-        track_id = self.send_track_from_file(source, target,
-                                             metadata, parent=parent)
+        track_id = self.send_track_from_file(
+            source, target, metadata, parent=parent)
 
-        print(dedent("Create new track with\
+        print(
+            dedent("Create new track with\
                 ID: %s for Track: %s" % (track_id, target)))
 
         return track_id
@@ -245,7 +244,6 @@ def test_mtp():
     mtp.sendtrack(source, target, parent=MUSICFOLDER)
     mtp.disconnect()
 
-
 # if __name__ == "__main__":
 #     # 测试 send file 与 send track 的速度
 #     mtp = MyMTP()
@@ -277,7 +275,8 @@ def send_pic():
     target = pic_name
     def_pic_dir = mtp.device.contents.default_picture_folder
     item_id = mtp.send_file_from_file(source, target, parent=def_pic_dir)
-    print(dedent("Create new file with\
+    print(
+        dedent("Create new file with\
             ID: %s for File: %s" % (item_id, target)))
     mtp.disconnect()
 
