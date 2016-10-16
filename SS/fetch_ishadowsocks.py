@@ -3,12 +3,12 @@
 
 import re
 import json
-import argparse
+# import argparse
 from collections import OrderedDict
 
 from pyquery import PyQuery as pq
 
-GOAGENT = {'http': '127.0.0.1:8087'}
+# GOAGENT = {'http': '127.0.0.1:8087'}
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) \
 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36'
@@ -23,8 +23,11 @@ class Iss(object):
         self.url = url
         self.headers = headers or {}
         self.proxies = proxies or {}
-        self.doc = pq(url, headers=self.headers, proxies=self.proxies)
-        self.accounts_name = ('us', 'hk', 'jp')
+        self.doc = pq(url,
+                      headers=self.headers,
+                      proxies=self.proxies,
+                      encoding='UTF-8')
+        self.accounts_name = ('usa', 'hka', 'jpa')
         self.conf_name = ('server', 'server_port', 'password', 'method')
         self.accounts = self.parse()
 
@@ -43,7 +46,7 @@ class Iss(object):
             return res
 
     def parse(self):
-        accounts = self.doc('#free')('.col-lg-4')
+        accounts = self.doc('#free')('.col-sm-4')
         res = {k: self._get_account(accounts, v)
                for v, k in enumerate(self.accounts_name)}
         return res
@@ -66,17 +69,17 @@ class Iss(object):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Get free shadowsocks accounts from http://www.ishadowsocks.net/'
-    )
-    parser.add_argument('-n', '--no-proxy', action='store_true',
-                        help='do not use proxy')
-    args = parser.parse_args()
-    if args.no_proxy:
-        iss = Iss(URL, HEADERS)
-    else:
-        iss = Iss(URL, HEADERS, GOAGENT)
-    iss.dump()
+    # parser = argparse.ArgumentParser(
+    #     description='Get free shadowsocks accounts from http://www.ishadowsocks.net/'
+    # )
+    # parser.add_argument('-n', '--no-proxy', action='store_true',
+    #                     help='do not use proxy')
+    # args = parser.parse_args()
+    # if args.no_proxy:
+    iss = Iss(URL, HEADERS)
+    # else:
+    #     iss = Iss(URL, HEADERS, GOAGENT)
+    # iss.dump()
     iss.show()
 
 
